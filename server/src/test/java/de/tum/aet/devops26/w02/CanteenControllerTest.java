@@ -54,12 +54,26 @@ public class CanteenControllerTest {
 
     @Test
     public void testGetTodayMeals_ReturnsNoContent_WhenNoMealsAvailable() throws Exception {
-         // TODO implement this test
+        when(restTemplate.getForObject(anyString(), eq(Week.class))).thenReturn(null);
+
+        List<Dish> result = getList("/mensa-garching/today", HttpStatus.OK, Dish.class);
+        assertThat(result).isEmpty();
     }
 
     @Test
     public void testGetTodayMeals_ReturnsOkWithMeals() throws Exception {
-         // TODO implement this second test
+        LocalDate testDate = LocalDate.of(2025, 5, 8);
+        int year = testDate.getYear();
+        int weekNumber = testDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear());
+        Week testWeek = createTestData(testDate, weekNumber, year);
+
+        when(restTemplate.getForObject(anyString(), eq(Week.class))).thenReturn(testWeek);
+
+        List<Dish> result = getList("/mensa-garching/today", HttpStatus.OK, Dish.class);
+        assertThat(result).isNotNull();
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).name()).isEqualTo("Vegetarian Pasta");
+        assertThat(result.get(1).name()).isEqualTo("Salad");
     }
 
     private <T> List<T> getList(String path, HttpStatus expectedStatus, Class<T> listElementType, Object... uriVariables) throws Exception {
