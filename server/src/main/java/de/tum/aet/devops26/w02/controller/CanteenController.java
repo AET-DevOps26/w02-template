@@ -1,14 +1,15 @@
 package de.tum.aet.devops26.w02.controller;
 
-import de.tum.aet.devops26.w02.model.Dish;
-import de.tum.aet.devops26.w02.service.CanteenService;
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import de.tum.aet.devops26.w02.model.Dish;
+import de.tum.aet.devops26.w02.service.CanteenService;
 
 @CrossOrigin
 @RestController
@@ -29,6 +30,11 @@ public class CanteenController {
     public ResponseEntity<List<Dish>> getTodayMeals(@PathVariable String canteenName) {
         // TODO: Implement the logic to fetch today's meals for the specified canteen using the CanteenService
         List<Dish> todayMeals = canteenService.getTodayMeals(canteenName); 
+
+        if (todayMeals.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        
         return ResponseEntity.ok(todayMeals);
     }
 }
